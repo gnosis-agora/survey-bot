@@ -15,7 +15,7 @@ var chance = new Chance();
 
 
 setInterval(() => {
-  https.get("https://protected-island-32642.herokuapp.com/");
+  https.get("https://nameless-coast-38025.herokuapp.com/");
 }, 900000);
 
 var app = express();

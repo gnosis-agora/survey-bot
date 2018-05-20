@@ -1,6 +1,6 @@
 import assert from "assert";
 var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://heroku_6s2cdsgj:jfu9mmja5pbr23ab1hnl7bsuko@ds135690.mlab.com:35690/heroku_6s2cdsgj';
+var url = 'mongodb://heroku_tw9960pt:d94oep26307tq2eup7k0vhcuu@ds213338.mlab.com:13338/heroku_tw9960pt';
 
 export const insertDocument = (data) => {
   delete data._id;
