@@ -1,0 +1,1 @@
+mongoexport -h ds135690.mlab.com:35690 -d heroku_6s2cdsgj -c testSubjects -u heroku_6s2cdsgj -p jfu9mmja5pbr23ab1hnl7bsuko --type=csv -o C:\Users\gnosi\Desktop\out.csv -f userId,uniqueId,locale,timezone,wakingTime,sleepingTime,dateString,fromFather,question1,question2,question3,question4,question5,question6
