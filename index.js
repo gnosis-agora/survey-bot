@@ -1,4 +1,3 @@
-require('newrelic');
 import express from "express";
 import request from "request";
 import bodyParser from "body-parser";
@@ -104,7 +103,6 @@ setInterval(() => {
 
 /* SET ALL GLOBAL VARIABLES HERE */
 const QUESTION_1_ANSWERS = {A: "SMS (Short Message Service) / iMessage", B: "Whatsapp", C: "WeChat", D: "Snapchat", E: "Facebook Messenger", F: "Line"};
-const QUESTION_3_ANSWERS = getQuestion3Choices();
 const QUESTION_4_ANSWERS = {A: "Emojis", B: "Short-cuts in spelling (e.g. LOL, b4, l8)", C: "Short-cuts in grammar (e.g. missing words)", D: "Others (Please specify)", E: "No textspeak was used"};
 const IDLE_QUESTION_ANSWERS = {A: "I didn't have my phone with me.", B: "I didn't have Internet access.", C: "I was sleeping.", D: "I was doing something that couldn't be disrupted.",E: "I didn't check my phone.", F: "Some other reason (Please specify)"};
 
@@ -453,7 +451,7 @@ function processMessage(event) {
             updateDocument(currentUser, currentUser._id);
             question = [
               {
-                text: ("On a scale of 1-5, with '1' being Not at all cool and '5' being Extremely cool, rate how cool you think your parent is.")
+                text: ("On a scale of 1-5, with '1' being Not at all cool and '5' being Extremely cool, rate how cool you think your parent is."),
                 quick_replies: [
                   {
                     content_type: "text",
@@ -480,6 +478,7 @@ function processMessage(event) {
                     title: "5",
                     payload: "Extremely cool"
                   }, 
+                ]
               }
             ];
             sendMessage(senderId, question);
