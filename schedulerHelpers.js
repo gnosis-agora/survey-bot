@@ -15,9 +15,9 @@ export var getSchedule = (wakingTime, sleepingTime, timezone) => {
 	let schedule = [];
 	while (currHour < finalHour) {
 		if (currHour + interval - timezone < 0) {
-			schedule.push({h: [(currHour+24)%24]})
+			schedule.push({h: [(currHour + 24 - timezone) % 24]})
 		} else {
-			schedule.push({h: [currHour%24]})
+			schedule.push({h: [(currHour - timezone) % 24]})
 		}
 		currHour += interval;
 	}

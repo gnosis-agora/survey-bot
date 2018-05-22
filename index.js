@@ -38,7 +38,7 @@ setInterval(() => {
   findAllActiveSubjects().then(docs => {
     if (docs != null) {
       docs.forEach(activeSubject => {
-        if ((new moment().unix() - activeSubject.lastSeen >= 20*60) && !activeSubject.idled) {
+        if ((new moment().unix() - activeSubject.lastSeen >= 60*60) && !activeSubject.idled) {
           // if user is idle for > 20 min
           // set flag so we won't repeatedly prompt idle user
           updateActiveSubject({$set: {idled: true}}, activeSubject.userId);
