@@ -165,14 +165,14 @@ function processPostback(event) {
       if (error) {
         console.log("Error getting user's name: " +  error);
       } else {
+        let bodyObj = JSON.parse(body);
+        let name = bodyObj.first_name;
         locale = bodyObj.locale;
         timezone = bodyObj.timezone;        
         findDocument(senderId).then(doc => {
           if (doc) {
             greeting = "It appears that you're already registered in this survey. Please wait patiently for the questions to be prompted to you."
           } else {
-            let bodyObj = JSON.parse(body);
-            let name = bodyObj.first_name;
             greeting = "Hi " + name + ". Please enter your identification number: ";            
             insertDocument({userId: senderId, currentState: 0, locale: locale, timezone: timezone, timeStamp: new Date(), dateString: new moment().add(timezone,'hours').format("dddd, MMMM Do YYYY, h:mm:ss a")});
           }
