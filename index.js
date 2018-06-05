@@ -27,7 +27,7 @@ findAllActiveSubjects().then(docs => {
   if (docs != null) {
     docs.forEach(userData => {
       findDocument(userData.userId).then(currentUser => {
-        repeatMessage(currentUser.userId,currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone, userData.steps, currentUser.lastSentMessageHour);
+        repeatMessage(currentUser.userId, currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone, userData.steps, userData.maxStep, currentUser.lastSentMessageHour);
       });
     });    
   }
@@ -222,12 +222,13 @@ function processMessage(event) {
             else {
               currentUser.sleepingTime = message.text;
               currentUser.currentState = -1;
+              let getMaxStep = getSchedule(senderId,currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone)['schedules'].length * 7;
               updateDocument(currentUser, currentUser._id);
-              insertActiveSubject({userId: senderId, steps: 0, lastSeen: new moment().unix(), idled: true});
-              repeatMessage(senderId,currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone,0);
+              insertActiveSubject({userId: senderId, steps: 0, lastSeen: new moment().unix(), idled: true, maxStep: getMaxStep});
+              repeatMessage(senderId, currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone, 0, getMaxStep);
               question = [
                 {
-                  text: "Thank you for your response. As part of the research study, we will message you 7 times a day in the coming week. Please respond in a timely manner; you will need to answer 80% of the prompts to be reimbursed."
+                  text: "Thank you for your response. As part of the research study, we will message you a few times a day in the coming week. Please respond in a timely manner; you will need to answer 80% of the prompts to be reimbursed."
                 }
               ];
               sendMessage(senderId, question);
@@ -896,8 +897,8 @@ var sendMessage = (recipientId, messages, index=0) => {
   }  
 }
 
-var repeatMessage = (senderId, wakingTime, sleepingTime, timezone, steps, lastSentMessage=-1) => {
-  if (steps >= 35) { // TESTING
+var repeatMessage = (senderId, wakingTime, sleepingTime, timezone, steps, maxStep, lastSentMessage=-1) => {
+  if (steps >= maxStep) { // TESTING
     removeActiveSubject(senderId);
     return;
   }
@@ -967,7 +968,7 @@ var repeatMessage = (senderId, wakingTime, sleepingTime, timezone, steps, lastSe
           if (count >= 1) {
             t.clear();
             updateActiveSubject({$inc: {steps: 1}},senderId);
-            repeatMessage(senderId, wakingTime, sleepingTime, timezone, steps + 1, lastSentMessageHour);
+            repeatMessage(senderId, wakingTime, sleepingTime, timezone, steps + 1, maxStep, lastSentMessageHour);
           }
         });
       }
