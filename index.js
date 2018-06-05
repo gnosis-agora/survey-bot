@@ -222,7 +222,7 @@ function processMessage(event) {
             else {
               currentUser.sleepingTime = message.text;
               currentUser.currentState = -1;
-              let getMaxStep = getSchedule(senderId,currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone)['schedules'].length * 7;
+              let getMaxStep = getSchedule(currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone)['schedules'].length * 7;
               updateDocument(currentUser, currentUser._id);
               insertActiveSubject({userId: senderId, steps: 0, lastSeen: new moment().unix(), idled: true, maxStep: getMaxStep});
               repeatMessage(senderId, currentUser.wakingTime, currentUser.sleepingTime, currentUser.timezone, 0, getMaxStep);
