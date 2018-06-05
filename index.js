@@ -169,7 +169,7 @@ function processPostback(event) {
         let name = bodyObj.first_name;
         locale = bodyObj.locale;
         timezone = bodyObj.timezone;        
-        findDocument(senderId).then(doc => {
+        findActiveSubject(senderId).then(doc => {
           if (doc) {
             greeting = "It appears that you're already registered in this survey. Please wait patiently for the questions to be prompted to you."
           } else {
