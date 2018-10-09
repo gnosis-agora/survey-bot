@@ -236,7 +236,7 @@ function processMessage(event) {
             break;
 
           case 3:
-            if (!isNaN(message.text) || parseInt(message.text) > 5 or parseInt(message.text) < 1) {
+            if (!isNaN(message.text) || parseInt(message.text) > 5 || parseInt(message.text) < 1) {
               currentUser.currentState = 4;
               currentUser.q1 = parseInt(message.text);
               updateDocument(currentUser, currentUser._id); 
@@ -366,7 +366,7 @@ function processMessage(event) {
             break;
 
           case 5:
-            if (!isNaN(message.text) || parseInt(message.text) > 5 or parseInt(message.text) < 1) {
+            if (!isNaN(message.text) || parseInt(message.text) > 5 || parseInt(message.text) < 1) {
               currentUser.currentState = 6;
               currentUser.q3 = parseInt(message.text);
               updateDocument(currentUser, currentUser._id); 
@@ -480,44 +480,43 @@ function processMessage(event) {
             currentUser.q3_extra = message.text;
             currentUser.currentState = 5;
             updateDocument(currentUser, currentUser._id);
-                question = [
+            question = [
+              {
+                text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
+                quick_replies: [
                   {
-                    text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
-                    quick_replies: [
-                      {
-                        content_type: "text",
-                        title: "1",
-                        payload: "Not at all satisfied"
-                      },
-                      {
-                        content_type: "text",
-                        title: "2",
-                        payload: "Not satisfied"
-                      },
-                      {
-                        content_type: "text",
-                        title: "3",
-                        payload: "Neutral"
-                      },
-                      {
-                        content_type: "text",
-                        title: "4",
-                        payload: "Satisfied"
-                      },                    
-                      {
-                        content_type: "text",
-                        title: "5",
-                        payload: "Extremely Satisfied"
-                      },  
-                    ]
-                  }
-                ];
+                    content_type: "text",
+                    title: "1",
+                    payload: "Not at all satisfied"
+                  },
+                  {
+                    content_type: "text",
+                    title: "2",
+                    payload: "Not satisfied"
+                  },
+                  {
+                    content_type: "text",
+                    title: "3",
+                    payload: "Neutral"
+                  },
+                  {
+                    content_type: "text",
+                    title: "4",
+                    payload: "Satisfied"
+                  },                    
+                  {
+                    content_type: "text",
+                    title: "5",
+                    payload: "Extremely Satisfied"
+                  },  
+                ]
               }
-              sendMessage(senderId, question);
-              break;
+            ];
+            sendMessage(senderId, question);
+            break;
 
           case 8:
-            let regex = /^[a-zA-Z](,[a-zA-Z])*$/;
+            var regex = /^[a-zA-Z](,[a-zA-Z])*$/;
             if (!regex.test(message.text)) {
               sendMessage(senderId, [{text: "Please select your answers by replying through the chatbox in this format: A,B,C"}]);
             }
