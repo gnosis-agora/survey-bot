@@ -102,8 +102,8 @@ setInterval(() => {
 }, 60000);
 
 /* SET ALL GLOBAL VARIABLES HERE */
-const QUESTION_1_ANSWERS = {A: "SMS (Short Message Service) / iMessage", B: "Whatsapp", C: "WeChat", D: "Snapchat", E: "Facebook Messenger", F: "Line"};
-const QUESTION_4_ANSWERS = {A: "Emojis", B: "Short-cuts in spelling (e.g. LOL, b4, l8)", C: "Short-cuts in grammar (e.g. missing words)", D: "Others (Please specify)", E: "No textspeak was used"};
+const QUESTION_2_ANSWERS = {A: "My boyfriend/girlfriend/partner/spouse", B: "Friends/colleagues/schoolmates", C: "Family", D: "Alone", E: "Others (please specify)"};
+const QUESTION_5_ANSWERS = {A: "Upon seeing that behaviour, I did likewise and used my phone.", B: "The people/person apologised and/or gave an explanation for doing so.", C: "Others (please specify)", D: "None of the above"};
 const IDLE_QUESTION_ANSWERS = {A: "I didn't have my phone with me.", B: "I didn't have Internet access.", C: "I was sleeping.", D: "I was doing something that couldn't be disrupted.",E: "I didn't check my phone.", F: "Some other reason (Please specify)"};
 
 // Server index page
@@ -236,110 +236,61 @@ function processMessage(event) {
             break;
 
           case 3:
-            switch (message.text.toUpperCase()) {
-              case ("A"):
-                let father = chance.bool();
-                currentUser.textFromParents = 2;
-                currentUser.currentState = 5;
-                currentUser.fromFather = father;
-                updateDocument(currentUser, currentUser._id);
-                question = [
-                  {
-                    text: ("We're going to ask you about your conversation with both parents. Let's start with your " + ((father) ? "father. " : "mother. ")
-                          + "What platform did you receive the message(s) on? (Select all that apply)")
-                  },
-                  {
-                    text: "Please select your answers by replying through the chatbox in this format: A,B,C"
-                  },
-                  {
-                    text: "A: SMS (Short Message Service) / iMessage\nB: Whatsapp\nC: WeChat\nD: Snapchat\nE: Facebook Messenger\nF: Line\nG: Others (please specify)" 
-                  }
-                ];
-                sendMessage(senderId, question);
-                break;                   
-              case ("B"):
-                currentUser.textFromParents = 1;
-                currentUser.currentState = 4;
-                updateDocument(currentUser, currentUser._id); 
-                question = [
-                  {
-                    text: "Please select the parent you received the text message from: ",
-                    quick_replies: [
-                      {
-                        content_type: "text",
-                        title: "Father",
-                        payload: "STATE_4_A"
-                      },
-                      {
-                        content_type: "text",
-                        title: "Mother",
-                        payload: "STATE_4_B"                        
-                      }
-                    ]
-                  }
-                ];
-                sendMessage(senderId, question);
-                break;
-              case ("C"):
-                currentUser.currentState = 17;
-                updateDocument(currentUser, currentUser._id);
-                updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again
-                sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
-                break;
-
-              default:
-                let question = [
-                  {
-                    text: "It appears that you've selected an invalid option."
-                  },
-                  {
-                    text: "In the past 30 minutes, did you receive at least 1 text message from your parent(s)?"
-                  },
-                  {
-                    text: "A. Yes, from both parents. \nB. Yes, from one parent \nC. No",
-                    quick_replies: [
-                      {
-                        content_type: "text",
-                        title: "A",
-                        payload: "STATE_3_A"                   
-                      },
-                      {
-                        content_type: "text",
-                        title: "B",
-                        payload: "STATE_3_B"                      
-                      },
-                      {
-                        content_type: "text",
-                        title: "C",
-                        payload: "STATE_3_C"                      
-                      },                    
-                    ]
-                  }
-                ];
-                sendMessage(senderId, question);
-                break;
+            if (!isNaN(message.text) || parseInt(message.text) > 5 or parseInt(message.text) < 1) {
+              currentUser.currentState = 4;
+              currentUser.q1 = parseInt(message.text);
+              updateDocument(currentUser, currentUser._id); 
+              question = [
+                {
+                  text: ("In the past 20 minutes, I was with (select all that apply): ")
+                },
+                {
+                  text: "Please select your answers by replying through the chatbox in this format: A,B,C"
+                },
+                {
+                  text: "A: My boyfriend/girlfriend/partner/spouse\nB: Friends/colleagues/schoolmates\nC: Family\nD: Alone\nE: Others (please specify)" 
+                }
+              ];
+              sendMessage(senderId, question);
             }
-            break;
+            else {
+              let question = [
+                {
+                  text: "On a scale of 1-5 (1 = not at all, 5 = very much so), rate this statement:\n\n'Right now, I feel happy.",
+                  quick_replies: [
+                    {
+                      content_type: "text",
+                      title: "1",
+                      payload: "1"                   
+                    },
+                    {
+                      content_type: "text",
+                      title: "2",
+                      payload: "2"                      
+                    },
+                    {
+                      content_type: "text",
+                      title: "3",
+                      payload: "3"                      
+                    },        
+                    {
+                      content_type: "text",
+                      title: "4",
+                      payload: "4"                      
+                    },     
+                    {
+                      content_type: "text",
+                      title: "5",
+                      payload: "5"                      
+                    }         
+                  ]
+                }
+              ];
+              sendMessage(senderId, question);                
+            }
+            break;          
 
           case 4:
-            currentUser.currentState = 5;
-            currentUser.fromFather = (message.text === "Father") ? true : false;
-            updateDocument(currentUser, currentUser._id);
-            question = [
-              {
-                text: ("We're going to ask you about your conversation with your " + message.text + ". What platform did you receive the message(s) on? (Select all that apply)")
-              },
-              {
-                text: "Please select your answers by replying through the chatbox in this format: A,B,C"
-              },
-              {
-                text: "A: SMS (Short Message Service) / iMessage\nB: Whatsapp\nC: WeChat\nD: Snapchat\nE: Facebook Messenger\nF: Line\nG: Others (please specify)" 
-              }
-            ];
-            sendMessage(senderId, question);
-            break;            
-
-          case 5:
             let regex = /^[a-zA-Z](,[a-zA-Z])*$/;
             if (!regex.test(message.text)) {
               sendMessage(senderId, [{text: "Please select your answers by replying through the chatbox in this format: A,B,C"}]);
@@ -349,33 +300,37 @@ function processMessage(event) {
               // change all answers to uppercase
               answers = answers.map(ele => ele.toUpperCase());
 
-              if (answers.indexOf("G") != -1) {
-                // remove "G" from answers array
-                answers = answers.filter(ele => ele !== "G");
+              if (answers.indexOf("E") != -1) {
+                // remove "E" from answers array
+                answers = answers.filter(ele => ele !== "E");
                 // map multiple choice answers to their long answers
-                answers = answers.map(ele => QUESTION_1_ANSWERS[ele]);
+                answers = answers.map(ele => QUESTION_2_ANSWERS[ele]);
                 // move to state 6
-                currentUser.currentState = 6;
-                currentUser.question1 = answers;
+                currentUser.currentState = 7;
+                currentUser.q2 = answers;
                 updateDocument(currentUser, currentUser._id);
                 question = [
                   {
-                    text: "Please specify the platform: "
+                    text: "Please elaborate: "
                   }
                 ];
               }
+              else if (answers.indexOf("D") != -1) {
+                currentUser.q2 = "D";
+                currentUser.currentState = 17;
+                updateDocument(currentUser, currentUser._id);
+                updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
+                sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
+              }
               else {
                 // map multiple choice answers to their long answers
-                answers = answers.map(ele => QUESTION_1_ANSWERS[ele]);
-                currentUser.question1 = answers;
-                currentUser.currentState = 7;
+                answers = answers.map(ele => QUESTION_2_ANSWERS[ele]);
+                currentUser.q2 = answers;
+                currentUser.currentState = 5;
                 updateDocument(currentUser, currentUser._id);
                 question = [
                   {
-                    text: "Were you satisfied with the conversation?"
-                  },
-                  {
-                    text: "On a scale of 1-5, with '1' being Not At All Satisfied and '5' being Extremely Satisfied, how satisfied were you with the conversation?",
+                    text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
                     quick_replies: [
                       {
                         content_type: "text",
@@ -410,192 +365,134 @@ function processMessage(event) {
             }
             break;
 
-          case 6:
-            currentUser.currentState = 7;
-            currentUser.question1.push(message.text);
-            updateDocument(currentUser, currentUser._id);
-            question = [
-              {
-                text: "Were you satisfied with the conversation?"
-              },
-              {
-                text: "On a scale of 1-5, with '1' being Not At All Satisfied and '5' being Extremely Satisfied, how satisfied were you with the conversation?",
-                quick_replies: [
-                  {
-                    content_type: "text",
-                    title: "1",
-                    payload: "Not at all satisfied"
-                  },
-                  {
-                    content_type: "text",
-                    title: "2",
-                    payload: "Not satisfied"
-                  },
-                  {
-                    content_type: "text",
-                    title: "3",
-                    payload: "Neutral"
-                  },
-                  {
-                    content_type: "text",
-                    title: "4",
-                    payload: "Satisfied"
-                  },                    
-                  {
-                    content_type: "text",
-                    title: "5",
-                    payload: "Extremely Satisfied"
-                  },  
-                ]
-              }                   
-            ];            
-            sendMessage(senderId, question);
-            break;
-
-          case 7:
-            currentUser.currentState = 8;
-            currentUser.question2 = message.text;
-            updateDocument(currentUser, currentUser._id);
-            question = [
-              {
-                text: ("On a scale of 1-5, with '1' being Not at all cool and '5' being Extremely cool, rate how cool you think your parent is."),
-                quick_replies: [
-                  {
-                    content_type: "text",
-                    title: "1",
-                    payload: "Not at all cool"
-                  },
-                  {
-                    content_type: "text",
-                    title: "2",
-                    payload: "Not cool"
-                  },
-                  {
-                    content_type: "text",
-                    title: "3",
-                    payload: "Neutral"
-                  },
-                  {
-                    content_type: "text",
-                    title: "4",
-                    payload: "Cool"
-                  },                    
-                  {
-                    content_type: "text",
-                    title: "5",
-                    payload: "Extremely cool"
-                  }, 
-                ]
-              }
-            ];
-            sendMessage(senderId, question);
-            break;            
-
-          case 8:
-            currentUser.currentState = 9;
-            currentUser.question3 = message.text;;
-            updateDocument(currentUser, currentUser._id);
-            question = [
-              {
-                text: ("Did your parent use any of the following 'textspeak' features? (Select all that apply)")
-              },
-              {
-                text: "Please select your answers by replying through the chatbox in this format: A,B,C"
-              },
-              {
-                text: ("A: " + QUESTION_4_ANSWERS["A"] + "\n" +
-                      "B: " + QUESTION_4_ANSWERS["B"] + "\n" + 
-                      "C: " + QUESTION_4_ANSWERS["C"] + "\n" +
-                      "D: " + QUESTION_4_ANSWERS["D"] + "\n" + 
-                      "E: " + QUESTION_4_ANSWERS["E"] + "\n"     
-                      )             
-              }
-            ];
-            sendMessage(senderId, question);
-            break;
-
-          case 9:
-            regex = /^[a-zA-Z](,[a-zA-Z])*$/;
-            if (!regex.test(message.text)) {
-              sendMessage(senderId, [{text: "Please select your answers by replying through the chatbox in this format: A,B,C"}]);
+          case 5:
+            if (!isNaN(message.text) || parseInt(message.text) > 5 or parseInt(message.text) < 1) {
+              currentUser.currentState = 6;
+              currentUser.q3 = parseInt(message.text);
+              updateDocument(currentUser, currentUser._id); 
+              question = [
+                {
+                  text: ("n the past 20 minutes, the people/person I was with ______ their phone"),
+                  quick_replies: [
+                    {
+                      content_type: "text",
+                      title: "Used",
+                      payload: "USED_PHONE"
+                    },
+                    {
+                      content_type: "text",
+                      title: "Did not use",
+                      payload: "DID_NOT_USE_PHONE"
+                    } 
+                  ]
+                }
+              ];
+              sendMessage(senderId, question);
             }
             else {
-              let answers = message.text.split(',');
-              // change all answers to uppercase
-              answers = answers.map(ele => ele.toUpperCase());
+              let question = [
+                {
+                  text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
+                  quick_replies: [
+                    {
+                      content_type: "text",
+                      title: "1",
+                      payload: "1"                   
+                    },
+                    {
+                      content_type: "text",
+                      title: "2",
+                      payload: "2"                      
+                    },
+                    {
+                      content_type: "text",
+                      title: "3",
+                      payload: "3"                      
+                    },        
+                    {
+                      content_type: "text",
+                      title: "4",
+                      payload: "4"                      
+                    },     
+                    {
+                      content_type: "text",
+                      title: "5",
+                      payload: "5"                      
+                    }         
+                  ]
+                }
+              ];
+              sendMessage(senderId, question);                
+            }
+            break;
 
-              if (answers.indexOf("E") != -1) {
-                // case where no textspeak was used, exit
-                currentUser.question4 = [];
-                currentUser.currentState = 17;
-                if (currentUser.textFromParents == 2) {
-                  updateDocument(currentUser, currentUser._id);
-                  let newUser = Object.assign({}, currentUser);
-                  newUser.textFromParents = 1;
-                  newUser.currentState = 5;
-                  question = [
+          case 6:
+            if (!message.quick_reply.payload) {
+              let question = [
+                {
+                  text: "Please press the buttons instead of typing the reply."
+                },
+                {
+                  text: ("n the past 20 minutes, the people/person I was with ______ their phone"),
+                  quick_replies: [
                     {
-                      text: ("We're going to ask you about your conversation with your " 
-                        + ((currentUser.fromFather) ? "mother" : "father")
-                        + ". What platform did you receive the message(s) on? (Select all that apply)")
+                      content_type: "text",
+                      title: "Used",
+                      payload: "USED_PHONE"
                     },
                     {
-                      text: "Please select your answers by replying through the chatbox in this format: A,B,C"
-                    },
-                    {
-                      text: "A: SMS (Short Message Service) / iMessage\nB: Whatsapp\nC: WeChat\nD: Snapchat\nE: Facebook Messenger\nF: Line\nG: Others (please specify)" 
-                    }
-                  ];           
-                  newUser.fromFather = !currentUser.fromFather; 
-                  newUser.timeStamp = new Date();     
-                  newUser.dateString = new moment().add(currentUser.timezone,'hours').format("dddd, MMMM Do YYYY, h:mm:ss a");                       
-                  insertDocument(newUser);
-                  sendMessage(senderId, question);
+                      content_type: "text",
+                      title: "Did not use",
+                      payload: "DID_NOT_USE_PHONE"
+                    } 
+                  ]
                 }
-                else {
-                  updateDocument(currentUser, currentUser._id);
-                  updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again
-                  sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
+              ];
+              sendMessage(senderId, question);
+            }
+            else if (message.quick_reply.payload === "USED_PHONE") {
+              currentUser.currentState = 8;
+              currentUser.q4 = message.text;
+              updateDocument(currentUser, currentUser._id);
+              question = [
+                {
+                  text: ("In the past 20 minutes, the people/person I was with used their mobile phone. Which of these were true? (select all that apply)")
+                },
+                {
+                  text: "Please select your answers by replying through the chatbox in this format: A,B,C"
+                },
+                {
+                  text: "A: Upon seeing that behaviour, I did likewise and used my phone.\nB: The people/person apologised and/or gave an explanation for doing so.\nC: Others (please specify)\nD: None of the above" 
                 }
-                break;
-              }
-              else if (answers.indexOf("D") != -1) {
-                // remove "D" from answers array
-                answers = answers.filter(ele => ele !== "D");
-                // map multiple choice answers to their long answers
-                answers = answers.map(ele => QUESTION_4_ANSWERS[ele]);
-                // move to state 6
-                currentUser.currentState = 10;
-                currentUser.question4 = answers;
-                updateDocument(currentUser, currentUser._id);
+              ];
+              sendMessage(senderId, question);              
+            }
+            else {
+              currentUser.q4 = message.quick_reply.payload;
+              currentUser.currentState = 17;
+              updateDocument(currentUser, currentUser._id);
+              updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
+              sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
+            }
+            break;            
+
+          case 7:
+            currentUser.q3_extra = message.text;
+            currentUser.currentState = 5;
+            updateDocument(currentUser, currentUser._id);
                 question = [
                   {
-                    text: "You selected D: Others. What textspeak feature did your parent use?"
-                  }
-                ];
-              }
-              else {
-                // map multiple choice answers to their long answers
-                answers = answers.map(ele => QUESTION_4_ANSWERS[ele]);
-                currentUser.question4 = answers;
-                currentUser.currentState = 11;
-                updateDocument(currentUser, currentUser._id);
-                question = [
-                  {
-                    text: "In this conversation, my parents used text-speak correctly (like how I would use textspeak myself)"
-                  },
-                  {
-                    text: "On a scale of 1-5, with '1' being 'Strongly Disagree' and '5' being 'Strongly Agree', how much do you agree with this statement?",
+                    text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
                     quick_replies: [
                       {
                         content_type: "text",
                         title: "1",
-                        payload: "Strongly Disagree"
+                        payload: "Not at all satisfied"
                       },
                       {
                         content_type: "text",
                         title: "2",
-                        payload: "Disagree"
+                        payload: "Not satisfied"
                       },
                       {
                         content_type: "text",
@@ -605,189 +502,65 @@ function processMessage(event) {
                       {
                         content_type: "text",
                         title: "4",
-                        payload: "Agree"
+                        payload: "Satisfied"
                       },                    
                       {
                         content_type: "text",
                         title: "5",
-                        payload: "Strongly Agree"
+                        payload: "Extremely Satisfied"
                       },  
                     ]
                   }
-                ];               
+                ];
               }
               sendMessage(senderId, question);
-            }
-            break;
+              break;
 
-          case 10:
-            currentUser.currentState = 11;
-            currentUser.question4.push(message.text);
-            updateDocument(currentUser, currentUser._id);
-            question = [
-              {
-                text: "In this conversation, my parents used text-speak correctly (like how I would use textspeak myself)"
-              },
-              {
-                text: "On a scale of 1-5, with '1' being 'Strongly Disagree' and '5' being 'Strongly Agree', how much do you agree with this statement?",
-                quick_replies: [
-                  {
-                    content_type: "text",
-                    title: "1",
-                    payload: "Strongly Disagree"
-                  },
-                  {
-                    content_type: "text",
-                    title: "2",
-                    payload: "Disagree"
-                  },
-                  {
-                    content_type: "text",
-                    title: "3",
-                    payload: "Neutral"
-                  },
-                  {
-                    content_type: "text",
-                    title: "4",
-                    payload: "Agree"
-                  },                    
-                  {
-                    content_type: "text",
-                    title: "5",
-                    payload: "Strongly Agree"
-                  },  
-                ]
-              }
-            ];
-            sendMessage(senderId, question);
-            break;
-
-          case 11:
-            currentUser.question5 = message.text;
-            if (message.text === "4" || message.text === "5") {
-              currentUser.currentState = 12;
-              question = [
-                {
-                  text: "You selected 'Agree' or 'Strongly Agree'. Please explain the reason for this choice: "
-                }
-              ]
+          case 8:
+            let regex = /^[a-zA-Z](,[a-zA-Z])*$/;
+            if (!regex.test(message.text)) {
+              sendMessage(senderId, [{text: "Please select your answers by replying through the chatbox in this format: A,B,C"}]);
             }
             else {
-              currentUser.currentState = 13;
-              question = [
-                {
-                  text: "In this conversation, I appreciated my parent's use of textspeak"
-                },
-                {
-                  text: "On a scale of 1-5, with '1' being 'Strongly Disagree' and '5' being 'Strongly Agree', how much do you agree with this statement?",
-                  quick_replies: [
-                    {
-                      content_type: "text",
-                      title: "1",
-                      payload: "Strongly Disagree"
-                    },
-                    {
-                      content_type: "text",
-                      title: "2",
-                      payload: "Disagree"
-                    },
-                    {
-                      content_type: "text",
-                      title: "3",
-                      payload: "Neutral"
-                    },
-                    {
-                      content_type: "text",
-                      title: "4",
-                      payload: "Agree"
-                    },                    
-                    {
-                      content_type: "text",
-                      title: "5",
-                      payload: "Strongly Agree"
-                    },  
-                  ]
-                }
-              ];
-            }
-            updateDocument(currentUser, currentUser._id);
-            sendMessage(senderId, question);
-            break;
+              let answers = message.text.split(',');
+              // change all answers to uppercase
+              answers = answers.map(ele => ele.toUpperCase());
 
-          case 12:
-            currentUser.question5Explanation = message.text;
-            currentUser.currentState = 13;
-            question = [
-              {
-                text: "In this conversation, I appreciated my parent's use of textspeak"
-              },
-              {
-                text: "On a scale of 1-5, with '1' being 'Strongly Disagree' and '5' being 'Strongly Agree', how much do you agree with this statement?",
-                quick_replies: [
+              if (answers.indexOf("C") != -1) {
+                // remove "C" from answers array
+                answers = answers.filter(ele => ele !== "C");
+                // map multiple choice answers to their long answers
+                answers = answers.map(ele => QUESTION_5_ANSWERS[ele]);
+                // move to state 6
+                currentUser.currentState = 9;
+                currentUser.q5 = answers;
+                updateDocument(currentUser, currentUser._id);
+                question = [
                   {
-                    content_type: "text",
-                    title: "1",
-                    payload: "Strongly Disagree"
-                  },
-                  {
-                    content_type: "text",
-                    title: "2",
-                    payload: "Disagree"
-                  },
-                  {
-                    content_type: "text",
-                    title: "3",
-                    payload: "Neutral"
-                  },
-                  {
-                    content_type: "text",
-                    title: "4",
-                    payload: "Agree"
-                  },                    
-                  {
-                    content_type: "text",
-                    title: "5",
-                    payload: "Strongly Agree"
-                  },  
-                ]
+                    text: "Please elaborate: "
+                  }
+                ];
+                sendMessage(senderId, question);
               }
-            ];            
-            updateDocument(currentUser, currentUser._id);
-            sendMessage(senderId, question);
+              else {
+                // map multiple choice answers to their long answers
+                answers = answers.map(ele => QUESTION_5_ANSWERS[ele]);
+                currentUser.q5 = answers;
+                currentUser.currentState = 17;
+                updateDocument(currentUser, currentUser._id);
+                updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
+                sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
+              }
+              
+            }
             break;
 
-          case 13:
-            currentUser.question6 = message.text;
-            currentUser.currentState = 17;   
-            if (currentUser.textFromParents == 2) {
-              updateDocument(currentUser, currentUser._id);
-              let newUser = Object.assign({}, currentUser);
-              newUser.textFromParents = 1;
-              newUser.currentState = 5;
-              question = [
-                {
-                  text: ("We're going to ask you about your conversation with your " 
-                    + ((currentUser.fromFather) ? "mother" : "father")
-                    + ". What platform did you receive the message(s) on? (Select all that apply)")
-                },
-                {
-                  text: "Please select your answers by replying through the chatbox in this format: A,B,C"
-                },
-                {
-                  text: "A: SMS (Short Message Service) / iMessage\nB: Whatsapp\nC: WeChat\nD: Snapchat\nE: Facebook Messenger\nF: Line\nG: Others (please specify)" 
-                }
-              ];           
-              newUser.fromFather = !currentUser.fromFather;
-              newUser.timeStamp = new Date();          
-              newUser.dateString = new moment().add(currentUser.timezone,'hours').format("dddd, MMMM Do YYYY, h:mm:ss a");                    
-              insertDocument(newUser);
-              sendMessage(senderId, question);
-            }       
-            else {
-              updateDocument(currentUser, currentUser._id);   
-              updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
-              sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
-            }
+          case 9:
+            currentUser.q5_extra = message.text;
+            currentUser.currentState = 17;
+            updateDocument(currentUser, currentUser._id);
+            updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
+            sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
             break;
 
           case 14:
@@ -939,26 +712,33 @@ var repeatMessage = (senderId, wakingTime, sleepingTime, timezone, steps, maxSte
           }
           let question = [
             {
-              text: "In the past 30 minutes, did you receive at least 1 text message from your parent(s)?"
-            },
-            {
-              text: "A. Yes, from both parents. \nB. Yes, from one parent \nC. No",
+              text: "On a scale of 1-5 (1 = not at all, 5 = very much so), rate this statement:\n\n'Right now, I feel happy.",
               quick_replies: [
                 {
                   content_type: "text",
-                  title: "A",
-                  payload: "STATE_3_A"                   
+                  title: "1",
+                  payload: "1"                   
                 },
                 {
                   content_type: "text",
-                  title: "B",
-                  payload: "STATE_3_B"                      
+                  title: "2",
+                  payload: "2"                      
                 },
                 {
                   content_type: "text",
-                  title: "C",
-                  payload: "STATE_3_C"                      
-                },                    
+                  title: "3",
+                  payload: "3"                      
+                },        
+                {
+                  content_type: "text",
+                  title: "4",
+                  payload: "4"                      
+                },     
+                {
+                  content_type: "text",
+                  title: "5",
+                  payload: "5"                      
+                }         
               ]
             }
           ];
