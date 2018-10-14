@@ -58,7 +58,7 @@ setInterval(() => {
                 text: "Why didn't you respond to the previous qeustion?"
               },
               {
-                text: "A: I didn't have my phone with me.\nB: I didn't have Internet access.\nC: I was sleeping.\nD: I was doing something that couldn't be disrupted.\nE: I didn't check my phone.\nF: Some other reason (Please specify)",
+                text: "A: I didn't have my phone with me.\nB: I had my phone with me, but I didn’t check my phone.\nC: I didn't have Internet access.\nD: I was sleeping.\nE: I was doing something that couldn't be disrupted.\nF: Some other reason (Please specify)",
                 quick_replies: [
                   {
                     content_type: "text",
@@ -68,23 +68,23 @@ setInterval(() => {
                   {
                     content_type: "text",
                     title: "B",
-                    payload: "I didn't have Internet access."
+                    payload: "I had my phone with me, but I didn’t check my phone."
                   },
                   {
                     content_type: "text",
                     title: "C",
-                    payload: "I was sleeping."
+                    payload: "I didn't have Internet access."
                   },
                   {
                     content_type: "text",
                     title: "D",
-                    payload: "I was doing something that couldn't be disrupted."
-                  },                    
+                    payload: "I was sleeping."
+                  },
                   {
                     content_type: "text",
                     title: "E",
-                    payload: "I didn't check my phone."
-                  },
+                    payload: "I was doing something that couldn't be disrupted."
+                  },                    
                   {
                     content_type: "text",
                     title: "F",
@@ -104,7 +104,7 @@ setInterval(() => {
 /* SET ALL GLOBAL VARIABLES HERE */
 const QUESTION_2_ANSWERS = {A: "My boyfriend/girlfriend/partner/spouse", B: "Friends/colleagues/schoolmates", C: "Family", D: "Alone", E: "Others (please specify)"};
 const QUESTION_5_ANSWERS = {A: "Upon seeing that behaviour, I did likewise and used my phone.", B: "The people/person apologised and/or gave an explanation for doing so.", C: "Others (please specify)", D: "None of the above"};
-const IDLE_QUESTION_ANSWERS = {A: "I didn't have my phone with me.", B: "I didn't have Internet access.", C: "I was sleeping.", D: "I was doing something that couldn't be disrupted.",E: "I didn't check my phone.", F: "Some other reason (Please specify)"};
+const IDLE_QUESTION_ANSWERS = {A: "I didn't have my phone with me.",B: "I had my phone with me, but I didn’t check my phone.", C: "I didn't have Internet access.", D: "I was sleeping.", E: "I was doing something that couldn't be disrupted.", F: "Some other reason (Please specify)"};
 
 // Server index page
 app.get("/", (req, res) => {
