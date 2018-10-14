@@ -330,7 +330,7 @@ function processMessage(event) {
                 updateDocument(currentUser, currentUser._id);
                 question = [
                   {
-                    text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
+                    text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. \n\nThe person/people I was with made me feel:",
                     quick_replies: [
                       {
                         content_type: "text",
@@ -372,7 +372,7 @@ function processMessage(event) {
               updateDocument(currentUser, currentUser._id); 
               question = [
                 {
-                  text: ("n the past 20 minutes, the people/person I was with ______ their phone"),
+                  text: ("In the past 20 minutes, the people/person I was with ______ their phone"),
                   quick_replies: [
                     {
                       content_type: "text",
@@ -456,7 +456,7 @@ function processMessage(event) {
               updateDocument(currentUser, currentUser._id);
               question = [
                 {
-                  text: ("In the past 20 minutes, the people/person I was with used their mobile phone. Which of these were true? (select all that apply)")
+                  text: ("In the past 20 minutes, the people/person I was with used their mobile phone.\n\nWhich of these were true? (select all that apply)")
                 },
                 {
                   text: "Please select your answers by replying through the chatbox in this format: A,B,C"
@@ -711,7 +711,7 @@ var repeatMessage = (senderId, wakingTime, sleepingTime, timezone, steps, maxSte
           }
           let question = [
             {
-              text: "On a scale of 1-5 (1 = not at all, 5 = very much so), rate this statement:\n\n'Right now, I feel happy.",
+              text: "On a scale of 1-5 (1 = not at all, 5 = very much so), rate this statement:\n\nRight now, I feel happy.",
               quick_replies: [
                 {
                   content_type: "text",
