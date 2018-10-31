@@ -103,8 +103,8 @@ setInterval(() => {
 
 /* SET ALL GLOBAL VARIABLES HERE */
 const QUESTION_2_ANSWERS = {A: "My boyfriend/girlfriend/partner/spouse", B: "Friends/colleagues/schoolmates", C: "Family", D: "Alone", E: "Others (please specify)"};
-const QUESTION_5_ANSWERS = {A: "Upon seeing that behaviour, I did likewise and used my phone.", B: "The people/person apologised and/or gave an explanation for doing so.", C: "Others (please specify)", D: "None of the above"};
-const IDLE_QUESTION_ANSWERS = {A: "I didn't have my phone with me.",B: "I had my phone with me, but I didn’t check my phone.", C: "I didn't have Internet access.", D: "I was sleeping.", E: "I was doing something that couldn't be disrupted.", F: "Some other reason (Please specify)"};
+const QUESTION_5_ANSWERS = {A: "I was also using my phone.", B: "I was engaged in some other task and didn’t really notice.", C: "The people/person I was with apologised and gave an explanation for phone use.", D: "Others"};
+const IDLE_QUESTION_ANSWERS = {A: "I didn't have my phone with me.",B: "I had my phone with me, but I didn’t check my phone.", C: "I didn't have Internet access.", D: "I was sleeping.", E: "I was doing something that couldn't be disrupted.", F: "Some other reason"};
 
 // Server index page
 app.get("/", (req, res) => {
@@ -248,7 +248,7 @@ function processMessage(event) {
                   text: "Please select your answers by replying through the chatbox in this format: A,B,C"
                 },
                 {
-                  text: "A: My boyfriend/girlfriend/partner/spouse\nB: Friends/colleagues/schoolmates\nC: Family\nD: Alone\nE: Others (please specify)" 
+                  text: "A: My boyfriend/girlfriend/partner/spouse\nB: Friends/colleagues/schoolmates\nC: Family\nD: Alone\nE: Others" 
                 }
               ];
               sendMessage(senderId, question);
@@ -256,7 +256,7 @@ function processMessage(event) {
             else {
               let question = [
                 {
-                  text: "On a scale of 1-5 (1 = not at all, 5 = very much so), rate this statement:\n\n'Right now, I feel happy.",
+                  text: "On a scale of 1-5 , rate this statement:\n\n'Right now, I feel happy. (1 = not at all, 5 = very much so)",
                   quick_replies: [
                     {
                       content_type: "text",
@@ -372,16 +372,16 @@ function processMessage(event) {
               updateDocument(currentUser, currentUser._id); 
               question = [
                 {
-                  text: ("In the past 20 minutes, the people/person I was with ______ their phone"),
+                  text: ("In the past 20 minutes, the people/person I was with used their phone."),
                   quick_replies: [
                     {
                       content_type: "text",
-                      title: "Used",
+                      title: "Yes",
                       payload: "USED_PHONE"
                     },
                     {
                       content_type: "text",
-                      title: "Did not use",
+                      title: "No",
                       payload: "DID_NOT_USE_PHONE"
                     } 
                   ]
@@ -456,19 +456,19 @@ function processMessage(event) {
               updateDocument(currentUser, currentUser._id);
               question = [
                 {
-                  text: ("In the past 20 minutes, the people/person I was with used their mobile phone.\n\nWhich of these were true? (select all that apply)")
+                  text: ("Which of these were true of your response? (select all that apply)")
                 },
                 {
                   text: "Please select your answers by replying through the chatbox in this format: A,B,C"
                 },
                 {
-                  text: "A: Upon seeing that behaviour, I did likewise and used my phone.\nB: The people/person apologised and/or gave an explanation for doing so.\nC: Others (please specify)\nD: None of the above" 
+                  text: "A: I was also using my phone.\nB: I was engaged in some other task and didn’t really notice.\nC: The people/person I was with apologised and gave an explanation for phone use\nD: Others" 
                 }
               ];
               sendMessage(senderId, question);              
             }
             else {
-              currentUser.q4 = message.quick_reply.payload;
+              currentUser.q4 = message.text;
               currentUser.currentState = 17;
               updateDocument(currentUser, currentUser._id);
               updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
@@ -525,9 +525,9 @@ function processMessage(event) {
               // change all answers to uppercase
               answers = answers.map(ele => ele.toUpperCase());
 
-              if (answers.indexOf("C") != -1) {
-                // remove "C" from answers array
-                answers = answers.filter(ele => ele !== "C");
+              if (answers.indexOf("D") != -1) {
+                // remove "D" from answers array
+                answers = answers.filter(ele => ele !== "D");
                 // map multiple choice answers to their long answers
                 answers = answers.map(ele => QUESTION_5_ANSWERS[ele]);
                 // move to state 6
@@ -537,6 +537,34 @@ function processMessage(event) {
                 question = [
                   {
                     text: "Please elaborate: "
+                  }
+                ];
+                sendMessage(senderId, question);
+              }
+              else if (answers.indexOf('A') != -1) {
+                // remove "A" from answers array
+                answers = answers.filter(ele => ele !== "A");
+                // map multiple choice answers to their long answers
+                answers = answers.map(ele => QUESTION_5_ANSWERS[ele]);
+                // move to state 6
+                currentUser.currentState = 10;
+                currentUser.q5 = answers;
+                updateDocument(currentUser, currentUser._id);
+                question = [
+                  {
+                    text: "Amongst the people that you were with, were you the first person to use your phone in the last 20 minutes?",
+                    quick_replies: [
+                      {
+                        content_type: "text",
+                        title: "Yes",
+                        payload: "Yes"
+                      },
+                      {
+                        content_type: "text",
+                        title: "No",
+                        payload: "No"
+                      } 
+                    ]
                   }
                 ];
                 sendMessage(senderId, question);
@@ -556,6 +584,14 @@ function processMessage(event) {
 
           case 9:
             currentUser.q5_extra = message.text;
+            currentUser.currentState = 17;
+            updateDocument(currentUser, currentUser._id);
+            updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
+            sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
+            break;
+
+          case 10:
+            currentUser.q5_first_person = message.text;
             currentUser.currentState = 17;
             updateDocument(currentUser, currentUser._id);
             updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
@@ -711,7 +747,7 @@ var repeatMessage = (senderId, wakingTime, sleepingTime, timezone, steps, maxSte
           }
           let question = [
             {
-              text: "On a scale of 1-5 (1 = not at all, 5 = very much so), rate this statement:\n\nRight now, I feel happy.",
+              text: "On a scale of 1-5, rate this statement:\n\nRight now, I feel happy. (1 = not at all, 5 = very much so)",
               quick_replies: [
                 {
                   content_type: "text",
