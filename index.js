@@ -647,7 +647,7 @@ function processMessage(event) {
             break;
 
           case 18:
-            let regex = /^[a-zA-Z](,[a-zA-Z])*$/;
+            var regex = /^[a-zA-Z](,[a-zA-Z])*$/;
             if (!regex.test(message.text)) {
               sendMessage(senderId, [{text: "Please select your answers by replying through the chatbox in this format: A,B,C"}]);
             }
