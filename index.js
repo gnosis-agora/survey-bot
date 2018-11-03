@@ -58,7 +58,7 @@ setInterval(() => {
                 text: "Why didn't you respond to the previous qeustion?"
               },
               {
-                text: "A: I didn't have my phone with me.\nB: I had my phone with me, but I didn’t check my phone.\nC: I didn't have Internet access.\nD: I was sleeping.\nE: I was doing something that couldn't be disrupted.\nF: Some other reason (Please specify)",
+                text: "A: I didn't have my phone with me.\nB: I had my phone with me, but I didn’t check my phone.\nC: I didn't have Internet access.\nD: I was sleeping.\nE: I was doing something that couldn't be disrupted.\nF: Some other reason",
                 quick_replies: [
                   {
                     content_type: "text",
@@ -237,8 +237,8 @@ function processMessage(event) {
 
           case 3:
             if (!isNaN(message.text) || parseInt(message.text) > 5 || parseInt(message.text) < 1) {
-              currentUser.currentState = 4;
-              currentUser.q1 = parseInt(message.text);
+              currentUser.currentState = 18;
+              currentUser.q1 = message.text;
               updateDocument(currentUser, currentUser._id); 
               question = [
                 {
@@ -256,7 +256,7 @@ function processMessage(event) {
             else {
               let question = [
                 {
-                  text: "On a scale of 1-5 , rate this statement:\n\n'Right now, I feel happy. (1 = not at all, 5 = very much so)",
+                  text: "Rate this statement: Right now, I feel happy (1 = not at all, 5 = very much so).",
                   quick_replies: [
                     {
                       content_type: "text",
@@ -291,76 +291,47 @@ function processMessage(event) {
             break;          
 
           case 4:
-            let regex = /^[a-zA-Z](,[a-zA-Z])*$/;
+            let regex = /^\d+$/;
             if (!regex.test(message.text)) {
-              sendMessage(senderId, [{text: "Please select your answers by replying through the chatbox in this format: A,B,C"}]);
+              sendMessage(senderId, [{text: "Please enter just a number. How many people were there in total?"}]);
             }
             else {
-              let answers = message.text.split(',');
-              // change all answers to uppercase
-              answers = answers.map(ele => ele.toUpperCase());
-
-              if (answers.indexOf("E") != -1) {
-                // remove "E" from answers array
-                answers = answers.filter(ele => ele !== "E");
-                // map multiple choice answers to their long answers
-                answers = answers.map(ele => QUESTION_2_ANSWERS[ele]);
-                // move to state 6
-                currentUser.currentState = 7;
-                currentUser.q2 = answers;
-                updateDocument(currentUser, currentUser._id);
-                question = [
-                  {
-                    text: "Please elaborate: "
-                  }
-                ];
-              }
-              else if (answers.indexOf("D") != -1) {
-                currentUser.q2 = "D";
-                currentUser.currentState = 17;
-                updateDocument(currentUser, currentUser._id);
-                updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
-                sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
-              }
-              else {
-                // map multiple choice answers to their long answers
-                answers = answers.map(ele => QUESTION_2_ANSWERS[ele]);
-                currentUser.q2 = answers;
-                currentUser.currentState = 5;
-                updateDocument(currentUser, currentUser._id);
-                question = [
-                  {
-                    text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. \n\nThe person/people I was with made me feel:",
-                    quick_replies: [
-                      {
-                        content_type: "text",
-                        title: "1",
-                        payload: "Not at all satisfied"
-                      },
-                      {
-                        content_type: "text",
-                        title: "2",
-                        payload: "Not satisfied"
-                      },
-                      {
-                        content_type: "text",
-                        title: "3",
-                        payload: "Neutral"
-                      },
-                      {
-                        content_type: "text",
-                        title: "4",
-                        payload: "Satisfied"
-                      },                    
-                      {
-                        content_type: "text",
-                        title: "5",
-                        payload: "Extremely Satisfied"
-                      },  
-                    ]
-                  }
-                ];
-              }
+              // map multiple choice answers to their long answers
+              currentUser.q2_people = message.text;
+              currentUser.currentState = 5;
+              updateDocument(currentUser, currentUser._id);
+              question = [
+                {
+                  text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. \n\nThe person/people I was with made me feel:",
+                  quick_replies: [
+                    {
+                      content_type: "text",
+                      title: "1",
+                      payload: "Not at all satisfied"
+                    },
+                    {
+                      content_type: "text",
+                      title: "2",
+                      payload: "Not satisfied"
+                    },
+                    {
+                      content_type: "text",
+                      title: "3",
+                      payload: "Neutral"
+                    },
+                    {
+                      content_type: "text",
+                      title: "4",
+                      payload: "Satisfied"
+                    },                    
+                    {
+                      content_type: "text",
+                      title: "5",
+                      payload: "Extremely Satisfied"
+                    },  
+                  ]
+                }
+              ];
               sendMessage(senderId, question);
             }
             break;
@@ -456,7 +427,7 @@ function processMessage(event) {
               updateDocument(currentUser, currentUser._id);
               question = [
                 {
-                  text: ("Which of these were true of your response? (select all that apply)")
+                  text: "Which of these were true of your response? (select all that apply)"
                 },
                 {
                   text: "Please select your answers by replying through the chatbox in this format: A,B,C"
@@ -482,7 +453,7 @@ function processMessage(event) {
             updateDocument(currentUser, currentUser._id);
             question = [
               {
-                text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
+                text: "Rate your interaction with the person/people you were with: The person/people I was with made me feel (1 = completely excluded, 5 = completely excluded).",
                 quick_replies: [
                   {
                     content_type: "text",
@@ -674,6 +645,55 @@ function processMessage(event) {
             updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again
             sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
             break;
+
+          case 18:
+            let regex = /^[a-zA-Z](,[a-zA-Z])*$/;
+            if (!regex.test(message.text)) {
+              sendMessage(senderId, [{text: "Please select your answers by replying through the chatbox in this format: A,B,C"}]);
+            }
+            else {
+              let answers = message.text.split(',');
+              // change all answers to uppercase
+              answers = answers.map(ele => ele.toUpperCase());
+
+              if (answers.indexOf("E") != -1) {
+                // remove "E" from answers array
+                answers = answers.filter(ele => ele !== "E");
+                // map multiple choice answers to their long answers
+                answers = answers.map(ele => QUESTION_2_ANSWERS[ele]);
+                // move to state 6
+                currentUser.currentState = 7;
+                currentUser.q2 = answers;
+                updateDocument(currentUser, currentUser._id);
+                question = [
+                  {
+                    text: "Please elaborate: "
+                  }
+                ];
+              }
+              else if (answers.indexOf("D") != -1) {
+                currentUser.q2 = "D";
+                currentUser.currentState = 17;
+                updateDocument(currentUser, currentUser._id);
+                updateActiveSubject({$set: {idled: true}}, currentUser.userId); // set idled to true so that we can prompt idle user again           
+                sendMessage(senderId, [{text: "Thank you for your feedback!"}]);
+              }
+              else {
+                // map multiple choice answers to their long answers
+                answers = answers.map(ele => QUESTION_2_ANSWERS[ele]);
+                currentUser.q2 = answers;
+                currentUser.currentState = 4;
+                updateDocument(currentUser, currentUser._id);
+                question = [
+                  {
+                    text: "How many people were there in total?"
+                  }
+                ];
+              }
+              sendMessage(senderId, question);
+            }
+            break;
+
         }
       });      
     }
@@ -747,7 +767,7 @@ var repeatMessage = (senderId, wakingTime, sleepingTime, timezone, steps, maxSte
           }
           let question = [
             {
-              text: "On a scale of 1-5, rate this statement:\n\nRight now, I feel happy. (1 = not at all, 5 = very much so)",
+              text: "Rate this statement: Right now, I feel happy (1 = not at all, 5 = very much so).",
               quick_replies: [
                 {
                   content_type: "text",
