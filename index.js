@@ -343,7 +343,7 @@ function processMessage(event) {
               updateDocument(currentUser, currentUser._id); 
               question = [
                 {
-                  text: ("In the past 20 minutes, the people/person I was with used their phone."),
+                  text: ("The people/person I was with used their phone."),
                   quick_replies: [
                     {
                       content_type: "text",
@@ -363,7 +363,7 @@ function processMessage(event) {
             else {
               let question = [
                 {
-                  text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. The person/people I was with made me feel:",
+                  text: "Rate your interaction with the person/people you were with: The person/people I was with made me feel (1 = completely excluded, 5 = completely excluded).",
                   quick_replies: [
                     {
                       content_type: "text",
@@ -523,7 +523,7 @@ function processMessage(event) {
                 updateDocument(currentUser, currentUser._id);
                 question = [
                   {
-                    text: "Amongst the people that you were with, were you the first person to use your phone in the last 20 minutes?",
+                    text: "Amongst the people that you were with, were you the first person to use your phone?",
                     quick_replies: [
                       {
                         content_type: "text",
