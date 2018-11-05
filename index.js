@@ -302,7 +302,7 @@ function processMessage(event) {
               updateDocument(currentUser, currentUser._id);
               question = [
                 {
-                  text: "On a scale of 1-5 (1 = completed excluded, 5 = completed included), rate your interaction with the person/people you were with in the past 20 minutes. \n\nThe person/people I was with made me feel:",
+                  text: "Rate your interaction with the person/people you were with: The person/people I was with made me feel (1 = completely excluded, 5 = completely excluded).",
                   quick_replies: [
                     {
                       content_type: "text",
