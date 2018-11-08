@@ -55,7 +55,7 @@ setInterval(() => {
                 text: "Oh no! It appears that you've been idle for too long."
               },
               {
-                text: "Why didn't you respond to the previous qeustion?"
+                text: "Why didn't you respond to the previous question?"
               },
               {
                 text: "A: I didn't have my phone with me.\nB: I had my phone with me, but I didn’t check my phone.\nC: I didn't have Internet access.\nD: I was sleeping.\nE: I was doing something that couldn't be disrupted.\nF: Some other reason",
