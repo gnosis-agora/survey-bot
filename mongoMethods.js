@@ -6,6 +6,7 @@ export const insertDocument = (data) => {
   delete data._id;
   MongoClient.connect(url, (err, db) => {
     if (err) {
+      console.log('insertDocument');
       console.log(err);
     }
     db.collection('testSubjects').insertOne( data , function(err, result) { 
@@ -19,6 +20,7 @@ export const insertDocument = (data) => {
 export const updateDocument = (data, userId) => {
   MongoClient.connect(url , (err, db) => {
     if (err) {
+      console.log('updateDocument');
       console.log(err);
     }
     db.collection('testSubjects').update(
@@ -48,6 +50,7 @@ export const insertActiveSubject = (data) => {
   delete data._id;
   MongoClient.connect(url, (err, db) => {
     if (err) {
+      console.log('insertActiveSubject');
       console.log(err);
     }
     db.collection('activeSubjects').insertOne( data, (err, result) => {
@@ -75,6 +78,7 @@ export const findActiveSubject = async (userId) => {
 export const updateActiveSubject = (data, id) => {
   MongoClient.connect(url , (err, db) => {
     if (err) {
+      console.log('updateActiveSubject');
       console.log(err);
     }
     db.collection('activeSubjects').update(
@@ -89,6 +93,7 @@ export const removeActiveSubject = (id) => {
   let doc;
   MongoClient.connect(url, (err, db) => {
     if (err) {
+      console.log('removeActiveSubject')
       console.log(err);
     }
     db.collection('activeSubjects').deleteOne({userId: id});
