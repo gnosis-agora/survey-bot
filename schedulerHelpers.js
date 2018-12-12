@@ -10,14 +10,14 @@ export var getSchedule = (wakingTime, sleepingTime, timezone) => {
 	let currHour = wakingHours + 1;
 	let finalHour = (sleepingHours - 1 > 12) ? (sleepingHours) : (23);
 	let interval = 3;
-
+	let Timezone = Math.round(timezone);
 
 	let schedule = [];
 	while (currHour < finalHour) {
-		if (currHour + interval - timezone < 0) {
-			schedule.push({h: [(currHour + 24 - timezone) % 24]})
+		if (currHour + interval - Timezone < 0) {
+			schedule.push({h: [(currHour + 24 - Timezone) % 24]})
 		} else {
-			schedule.push({h: [(currHour - timezone) % 24]})
+			schedule.push({h: [(currHour - Timezone) % 24]})
 		}
 		currHour += interval;
 	}
