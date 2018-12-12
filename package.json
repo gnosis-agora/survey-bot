@@ -14,12 +14,12 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
-    "chance": "^1.0.10",
-    "express": "^4.15.3",
+    "chance": "^1.0.18",
+    "express": "^4.16.4",
     "later": "^1.2.0",
-    "moment": "^2.18.1",
-    "mongodb": "^2.2.31",
-    "request": "^2.81.0",
+    "moment": "^2.22.2",
+    "mongodb": "^2.2.36",
+    "request": "^2.88.0",
     "request-promise": "^4.2.1"
   },
   "devDependencies": {
