@@ -5,7 +5,9 @@ var url = 'mongodb://heroku_5drrr3s0:eds67n6gitdae4q1urh5o1ai5k@ds131954.mlab.co
 export const insertDocument = (data) => {
   delete data._id;
   MongoClient.connect(url, (err, db) => {
-    assert.equal(null, err);
+    if (err) {
+      console.log(err);
+    }
     db.collection('testSubjects').insertOne( data , function(err, result) { 
       assert.equal(err, null);
       console.log("Inserted a document into the testSubjects collection.");
@@ -16,7 +18,9 @@ export const insertDocument = (data) => {
 
 export const updateDocument = (data, userId) => {
   MongoClient.connect(url , (err, db) => {
-    assert.equal(null,err);
+    if (err) {
+      console.log(err);
+    }
     db.collection('testSubjects').update(
       {_id : userId},
       data,
@@ -43,7 +47,9 @@ export const findAllDocuments = async () => {
 export const insertActiveSubject = (data) => {
   delete data._id;
   MongoClient.connect(url, (err, db) => {
-    assert.equal(null,err);
+    if (err) {
+      console.log(err);
+    }
     db.collection('activeSubjects').insertOne( data, (err, result) => {
       assert.equal(err, null);
       console.log("Inserted a document into the activeSubjects collection.");
@@ -68,7 +74,9 @@ export const findActiveSubject = async (userId) => {
 
 export const updateActiveSubject = (data, id) => {
   MongoClient.connect(url , (err, db) => {
-    assert.equal(null,err);
+    if (err) {
+      console.log(err);
+    }
     db.collection('activeSubjects').update(
       {userId : id},
       data
@@ -80,7 +88,9 @@ export const updateActiveSubject = (data, id) => {
 export const removeActiveSubject = (id) => {
   let doc;
   MongoClient.connect(url, (err, db) => {
-    assert.equal(null,err);
+    if (err) {
+      console.log(err);
+    }
     db.collection('activeSubjects').deleteOne({userId: id});
     db.close();
   });
