@@ -363,7 +363,7 @@ function processMessage(event) {
             else {
               let question = [
                 {
-                  text: "Rate your interaction with the person/people you were with: The person/people I was with made me feel (1 = completely excluded, 5 = completely excluded).",
+                  text: "Rate your interaction with the person/people you were with: The person/people I was with made me feel (1 = completely excluded, 5 = completely included).",
                   quick_replies: [
                     {
                       content_type: "text",
@@ -453,7 +453,7 @@ function processMessage(event) {
             updateDocument(currentUser, currentUser._id);
             question = [
               {
-                text: "Rate your interaction with the person/people you were with: The person/people I was with made me feel (1 = completely excluded, 5 = completely excluded).",
+                text: "Rate your interaction with the person/people you were with: The person/people I was with made me feel (1 = completely excluded, 5 = completely included).",
                 quick_replies: [
                   {
                     content_type: "text",
