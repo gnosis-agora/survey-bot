@@ -10,7 +10,8 @@ export var getSchedule = (wakingTime, sleepingTime, timezone) => {
 	let currHour = wakingHours + 1;
 	let finalHour = (sleepingHours - 1 > 12) ? (sleepingHours) : (23);
 	let interval = 3;
-	let Timezone = Math.round(timezone);
+	// hard code timezone to singapore
+	let Timezone = 8;
 
 	let schedule = [];
 	while (currHour < finalHour) {
